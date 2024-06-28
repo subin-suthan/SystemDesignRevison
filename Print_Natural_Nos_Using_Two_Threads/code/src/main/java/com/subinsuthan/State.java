@@ -1,16 +1,24 @@
 package com.subinsuthan;
-import lombok.Getter;
 
-@Getter
-@Setter
 public class State {
 
-    private final PrinterType nextToPrint;
+    private PrinterType nextToPrint;
 
-    public State(PrinterType nextToPrint){
+    public PrinterType getNextToPrint() {
 
-        this.nextToPrint=nextToPrint;
+        return nextToPrint;
 
     }
-    
+
+    public void setNextToPrint(PrinterType nextToPrint) {
+        this.nextToPrint = nextToPrint;
+
+    }
+
+    public State(PrinterType nextToPrint) {
+
+        this.nextToPrint = nextToPrint;
+
+    }
+
 }
