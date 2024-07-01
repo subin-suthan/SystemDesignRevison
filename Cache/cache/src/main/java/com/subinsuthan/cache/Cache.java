@@ -5,45 +5,50 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
-
-public class Cache<KEY,VALUE> {
+public class Cache<KEY, VALUE> {
 
     private final WritePolicy writePolicy;
+    private final EvictionAlgo evictionAlgo;
 
-    private final Map<KEY,VALUE> map;
+    private final Map<KEY, VALUE> map;
 
-    private final DataSource<KEY,VALUE> dataSource;
+    private final DataSource<KEY, VALUE> dataSource;
 
+    private static final Integer THRESHOLD_SIZE = 1000;
 
-    public Cache(WritePolicy writePolicy,DataSource dataSource){
-        this.writePolicy=writePolicy;
-        this.dataSource=dataSource;
-        map=new ConcurrentHashMap<>();
+    public Cache(WritePolicy writePolicy, EvictionAlgo evictionAlgo, DataSource<KEY, VALUE> dataSource) {
+        this.writePolicy = writePolicy;
+        this.evictionAlgo = evictionAlgo;
+        this.dataSource = dataSource;
+        map = new ConcurrentHashMap<>();
     }
 
-    public Future<VALUE> get(KEY key){
+    public Future<VALUE> get(KEY key) {
 
-        if (map.containsKey(key)){
-            return  CompletableFuture.completedFuture(map.get(key));
-        }
-        else{
+        if (map.containsKey(key)) {
+            return CompletableFuture.completedFuture(map.get(key));
+        } else {
             return dataSource.get(key);
         }
 
     }
 
-    public Future<Void> set(KEY key,VALUE value){
+    public Future<Void> set(KEY key, VALUE value) {
 
-        if (map.containsKey(key)){
+        if (!map.containsKey(key) && map.size() >= THRESHOLD_SIZE) {
 
-            if(writePolicy==WritePolicy.WRITE_THROUGH){
-                  return dataSource.persist(key, value).thenAccept(__->map.put(key, value));
-            }
-
-        }else{
+            
 
         }
 
+        if (writePolicy == WritePolicy.WRITE_THROUGH) {
+            return dataSource.persist(key, value).thenAccept(__ -> map.put(key, value));
+        } else {
+            map.put(key, value);
+            dataSource.persist(key, value);
+            return CompletableFuture.completedFuture(null);
+        }
+
     }
-    
+
 }
