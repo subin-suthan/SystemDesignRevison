@@ -1,6 +1,7 @@
 package com.subinsuthan.cache;
 
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -10,7 +11,7 @@ public class Cache<KEY, VALUE> {
     private final WritePolicy writePolicy;
     private final EvictionAlgo evictionAlgo;
 
-    private final Map<KEY, VALUE> map;
+    private final Map<KEY, Record> map;
 
     private final DataSource<KEY, VALUE> dataSource;
 
@@ -37,7 +38,11 @@ public class Cache<KEY, VALUE> {
 
         if (!map.containsKey(key) && map.size() >= THRESHOLD_SIZE) {
 
-            
+            if(evictionAlgo.equals(EvictionAlgo.LRU)){
+
+            }
+
+
 
         }
 
@@ -48,6 +53,9 @@ public class Cache<KEY, VALUE> {
             dataSource.persist(key, value);
             return CompletableFuture.completedFuture(null);
         }
+
+        TreeMap<KEY,Record<VALUE>> treeMap=new TreeMap<>();
+        treeMap.firstEntry();
 
     }
 
