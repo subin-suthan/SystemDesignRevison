@@ -15,18 +15,23 @@ public class Cache<KEY, VALUE> {
 
     private final DataSource<KEY, VALUE> dataSource;
 
+    private final Integer expiryTime;
+
     private static final Integer THRESHOLD_SIZE = 1000;
 
-    public Cache(WritePolicy writePolicy, EvictionAlgo evictionAlgo, DataSource<KEY, VALUE> dataSource) {
+    public Cache(WritePolicy writePolicy, EvictionAlgo evictionAlgo, DataSource<KEY, VALUE> dataSource,Integer expiryTime) {
         this.writePolicy = writePolicy;
         this.evictionAlgo = evictionAlgo;
         this.dataSource = dataSource;
+        this.expiryTime=expiryTime;
         map = new ConcurrentHashMap<>();
     }
 
     public Future<VALUE> get(KEY key) {
 
         if (map.containsKey(key)) {
+
+            if(map.get(key).get)
             return CompletableFuture.completedFuture(map.get(key));
         } else {
             return dataSource.get(key);
