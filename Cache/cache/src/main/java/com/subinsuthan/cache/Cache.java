@@ -11,7 +11,7 @@ public class Cache<KEY, VALUE> {
     private final WritePolicy writePolicy;
     private final EvictionAlgo evictionAlgo;
 
-    private final Map<KEY, Record> map;
+    private final Map<KEY, Record<VALUE>> map;
 
     private final DataSource<KEY, VALUE> dataSource;
 
@@ -31,7 +31,7 @@ public class Cache<KEY, VALUE> {
 
         if (map.containsKey(key)) {
 
-            if(map.get(key).get)
+            if(map.get(key))
             return CompletableFuture.completedFuture(map.get(key));
         } else {
             return dataSource.get(key);
