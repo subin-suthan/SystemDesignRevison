@@ -27,14 +27,14 @@ public class Cache<KEY, VALUE> {
         map = new ConcurrentHashMap<>();
     }
 
-    public Future<VALUE> get(KEY key) {
+    public CompletableFuture<VALUE> get(KEY key) {
 
-        if (map.containsKey(key)) {
+        if (map.containsKey(key) && map.get(key).getTimestamp()>=System.currentTimeMillis()-expiryTime) {
 
-            if(map.get(key))
-            return CompletableFuture.completedFuture(map.get(key));
+              return CompletableFuture.completedFuture(map.get(key)).thenApply(Record::getValue);
         } else {
-            return dataSource.get(key);
+            return dataSource.get(key).thenCompose(value->set(key,value).thenApply(__->value));
+
         }
 
     }

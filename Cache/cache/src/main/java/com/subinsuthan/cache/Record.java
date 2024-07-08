@@ -1,5 +1,10 @@
 package com.subinsuthan.cache;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Record<VALUE> implements Comparable<Record<VALUE>>{
 
    private final VALUE value;
@@ -13,8 +18,8 @@ public class Record<VALUE> implements Comparable<Record<VALUE>>{
     }
 
     @Override
-    public int compareTo(Record record) {
-        return (int)(timestamp=record.timestamp);
+    public int compareTo(Record<VALUE> record) {
+        return (int)(timestamp-record.timestamp);
 
 
     }
